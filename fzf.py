@@ -5,12 +5,11 @@ from subprocess import PIPE, Popen
 import utils
 
 
-def get_command_list(server_port, port_publish_path="/tmp/fzf-port"):
+def get_command_list(fzf_port, server_port):
     return [
         "fzf",
         "--listen",
-        "--bind",
-        f"start:execute-silent:echo $FZF_PORT > {port_publish_path}",
+        str(fzf_port),
         "--bind",
         f'ctrl-a:execute-silent:curl "localhost:{server_port}?reload=date"',
     ]
@@ -21,15 +20,12 @@ class Fzf:
     port: int
     proc: Popen
 
-    def __init__(self):
-        pass
+    def __init__(self, port):
+        self.port = port
 
-    def start_asyn(self, server_port, port_publish_path="/tmp/fzf-port"):
-        cmd = get_command_list(server_port, port_publish_path)
-        utils.refresh_fifo(port_publish_path)
+    def start_asyn(self, server_port):
+        cmd = get_command_list(self.port, server_port)
         self.proc = subprocess.Popen(cmd, stdout=PIPE, text=True)
-        with open(port_publish_path) as f:
-            self.port = int(f.readlines()[0])
 
     def communicate(self):
         result = self.proc.communicate()
@@ -40,4 +36,5 @@ class Fzf:
         return self.port
 
     def reload(self, data):
+        print(f"http://localhost:{self.port}")
         utils.post_to_localhost(f"http://localhost:{self.port}", data=f"reload({data})")

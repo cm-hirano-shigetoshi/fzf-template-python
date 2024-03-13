@@ -29,9 +29,8 @@ class AbsRequestHandler(BaseHTTPRequestHandler):
 
 
 class ThreadedHTTPServer(threading.Thread):
-    def set_handler(self, request_handler):
-        self.httpd = HTTPServer(("", 0), request_handler)
-        return self.httpd.server_port
+    def set_handler(self, port, request_handler):
+        self.httpd = HTTPServer(("", port), request_handler)
 
     def run(self):
         self.httpd.serve_forever()
@@ -45,9 +44,10 @@ class InternalServer:
     server: Thread
     port: int
 
-    def __init__(self, request_handler_cls):
+    def __init__(self, request_handler_cls, port):
+        self.port = port
         self.server = ThreadedHTTPServer(daemon=True)
-        self.port = self.server.set_handler(request_handler_cls)
+        self.server.set_handler(port, request_handler_cls)
         atexit.register(self.server.stop)
 
     def get_port(self):
