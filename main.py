@@ -24,7 +24,7 @@ def main(args, options):
     # fzfの出力を取得する
     try:
         stdout = fzf.communicate()
-        print(stdout)
+        print(stdout, end="")
     finally:
         server.stop()
 

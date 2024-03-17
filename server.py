@@ -25,8 +25,6 @@ class AbsRequestHandler(BaseHTTPRequestHandler):
 
 class RequestHandler(AbsRequestHandler):
     def receive(self, params):
-        with open("/tmp/aaa", "a") as f:
-            print(json.dumps(params), file=f)
         # サーバリクエストに対する処理を書いていく
         if "bind" in params:
             core.bind(params["bind"][0])
