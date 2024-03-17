@@ -2,8 +2,23 @@ import shlex
 
 import utils
 
-sources = {"initial": "fd", "ctrl-a": "date"}
-binds = {"ctrl-a": "reload(date)"}
+sources = {"initial": "fd", "ctrl-a": "date", "ctrl-b": "env"}
+binds = {
+    "ctrl-a": f'reload({sources["ctrl-a"]})',
+    "ctrl-b": f'reload({sources["ctrl-b"]})',
+}
+
+
+def get_bind_potions(server_port):
+    options = []
+    for key in binds.keys():
+        options.append("--bind")
+        options.append(
+            shlex.quote(
+                f'{key}:execute-silent:curl "localhost:{server_port}?bind={key}"'
+            )
+        )
+    return options
 
 
 def get_initial_fzf_cmd(fzf_port, server_port):
@@ -13,13 +28,7 @@ def get_initial_fzf_cmd(fzf_port, server_port):
         "fzf",
         "--listen",
         fzf_port,
-        "--bind",
-        shlex.quote(
-            f'ctrl-a:execute-silent:curl "localhost:{server_port}?bind=ctrl-a"'
-        ),
-    ]
-    with open("/tmp/aaa", "a") as f:
-        print(" ".join(cmd_list), file=f)
+    ] + get_bind_potions(server_port)
     return " ".join(cmd_list)
 
 
