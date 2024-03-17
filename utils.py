@@ -8,6 +8,10 @@ def post_to_localhost(*args, **kwargs):
     requests.post(*args, **kwargs, proxies={"http": None})
 
 
+def request_fzf(data):
+    post_to_localhost(f'http://localhost:{os.environ["FZF_PORT"]}', data=data)
+
+
 def refresh_fifo(path):
     os.remove(path)
     os.mkfifo(path)

@@ -3,7 +3,7 @@ import os
 import urllib.parse
 from http.server import BaseHTTPRequestHandler, HTTPServer
 
-import utils
+import core
 
 
 class AbsRequestHandler(BaseHTTPRequestHandler):
@@ -23,17 +23,13 @@ class AbsRequestHandler(BaseHTTPRequestHandler):
         return
 
 
-def reload(data):
-    utils.post_to_localhost(
-        f'http://localhost:{os.environ["FZF_PORT"]}', data=f"reload({data})"
-    )
-
-
 class RequestHandler(AbsRequestHandler):
     def receive(self, params):
+        with open("/tmp/aaa", "a") as f:
+            print(json.dumps(params), file=f)
         # サーバリクエストに対する処理を書いていく
-        if "reload" in params:
-            reload(params["reload"][0])
+        if "bind" in params:
+            core.bind(params["bind"][0])
             return True
         return False
 
