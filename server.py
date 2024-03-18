@@ -4,6 +4,7 @@ import urllib.parse
 from http.server import BaseHTTPRequestHandler, HTTPServer
 
 import core
+import utils
 
 
 class AbsRequestHandler(BaseHTTPRequestHandler):
@@ -27,7 +28,7 @@ class RequestHandler(AbsRequestHandler):
     def receive(self, params):
         # サーバリクエストに対する処理を書いていく
         if "bind" in params:
-            core.bind(params["bind"][0])
+            bind(params["bind"][0])
             return True
         return False
 
@@ -35,6 +36,10 @@ class RequestHandler(AbsRequestHandler):
 def start():
     httpd = HTTPServer(("", int(os.environ["SERVER_PORT"])), RequestHandler)
     httpd.serve_forever()
+
+
+def bind(key):
+    utils.request_fzf(data=core.binds[key])
 
 
 if __name__ == "__main__":
