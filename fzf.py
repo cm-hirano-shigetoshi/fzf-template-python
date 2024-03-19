@@ -4,14 +4,12 @@ import subprocess
 from dataclasses import dataclass
 from subprocess import PIPE, Popen
 
+SOURCE = "fd"
 BIND_KEYS = ["ctrl-a", "ctrl-b"]
 
 
-def get_initial_fzf_cmd(fzf_port):
+def get_initial_fzf_options(fzf_port):
     return [
-        "fd",
-        "|",
-        "fzf",
         "--listen",
         fzf_port,
     ]
@@ -37,11 +35,10 @@ class Fzf:
         pass
 
     def start_asyn(self):
-        cmd_list = get_initial_fzf_cmd(os.environ["FZF_PORT"])
+        cmd_list = get_initial_fzf_options(os.environ["FZF_PORT"])
         cmd_list += get_bind_potions(os.environ["SERVER_PORT"], BIND_KEYS)
-        self.proc = subprocess.Popen(
-            " ".join(cmd_list), stdout=PIPE, text=True, shell=True
-        )
+        cmd = " ".join([SOURCE, "|", "fzf"] + cmd_list)
+        self.proc = subprocess.Popen(cmd, stdout=PIPE, text=True, shell=True)
 
     def communicate(self):
         result = self.proc.communicate()
