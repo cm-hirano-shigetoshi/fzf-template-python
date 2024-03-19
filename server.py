@@ -28,9 +28,13 @@ class RequestHandler(AbsRequestHandler):
     def receive(self, params):
         # サーバリクエストに対する処理を書いていく
         if "bind" in params:
-            bind(params["bind"][0])
+            core.bind(params["bind"][0])
             return True
         return False
+
+
+def set_initial_source():
+    utils.request_fzf(data=f"reload({core.get_source()})")
 
 
 def start():
@@ -38,9 +42,6 @@ def start():
     httpd.serve_forever()
 
 
-def bind(key):
-    utils.request_fzf(data=core.binds[key])
-
-
 if __name__ == "__main__":
+    set_initial_source()
     start()
